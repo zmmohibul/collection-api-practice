@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   # root "posts#index"
   post 'register', to: 'authentication#register'
   post 'login', to: 'authentication#login'
+  get 'authenticated', to: 'authentication#authenticated'
 end

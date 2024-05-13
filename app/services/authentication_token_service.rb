@@ -1,5 +1,5 @@
 class AuthenticationTokenService
-  HMAC_SECRET = "my$ecretkin$token"
+  HMAC_SECRET = ENV['HMAC_SECRET']
   ALGORITHM_TYPE = "HS256"
   def self.encode(user)
     payload = { user_id: user.id, username: user.username }

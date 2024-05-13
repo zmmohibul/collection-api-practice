@@ -1,7 +1,7 @@
 class AuthenticationController < ApplicationController
+  before_action :authorize, only: [:authenticated]
   def register
     user = User.new(username: username_param, password: password_param)
-
     if user.save
       return render json: user_json(user), status: :created
     end
@@ -16,6 +16,10 @@ class AuthenticationController < ApplicationController
     end
 
     render json: user_json(user), status: :ok
+  end
+
+  def authenticated
+    render json: user_json(@user), status: :ok
   end
 
   private
