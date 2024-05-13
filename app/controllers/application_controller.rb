@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include ActionController::HttpAuthentication::Token
   class AuthenticationError < StandardError; end
 
   rescue_from ActionController::ParameterMissing, with: :parameter_missing
@@ -16,15 +17,16 @@ class ApplicationController < ActionController::API
   end
 
   def decoded_user_token
-    header = request.headers['Authorization']
-    if header
-      token = header.split(" ")[1]
-      AuthenticationTokenService.decode(token)
-    end
+    token, _options = token_and_options(request)
+    AuthenticationTokenService.decode(token) if token
   end
 
   def authorize
     unauthorized unless !!current_user
+  end
+
+  def authorize_admin
+    unauthorized unless @user.admin?
   end
 
   def authentication_error

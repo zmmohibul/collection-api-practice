@@ -1,5 +1,6 @@
 class Api::AuthenticationController < ApplicationController
-  before_action :authorize, only: [:authenticated]
+  before_action :authorize, only: [:authenticated, :admin_authenticated]
+  before_action :authorize_admin, only: [:admin_authenticated]
   def register
     user = User.new(username: username_param, password: password_param)
     if user.save
@@ -22,6 +23,10 @@ class Api::AuthenticationController < ApplicationController
     render json: user_json(@user), status: :ok
   end
 
+  def admin_authenticated
+    render json: user_json(@user), status: :ok
+  end
+
   private
   def username_param
     params.require(:username)
@@ -32,6 +37,6 @@ class Api::AuthenticationController < ApplicationController
   end
 
   def user_json(user)
-    { id: user.id, username: user.username, token: AuthenticationTokenService.encode(user) }
+    { id: user.id, username: user.username, role: user.role, token: AuthenticationTokenService.encode(user) }
   end
 end

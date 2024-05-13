@@ -11,6 +11,7 @@ Rails.application.routes.draw do
     post 'register', to: 'authentication#register'
     post 'login', to: 'authentication#login'
     get 'authenticated', to: 'authentication#authenticated'
+    get 'admin_authenticated', to: 'authentication#admin_authenticated'
   end
 
 end
