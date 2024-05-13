@@ -1,4 +1,4 @@
-class AuthenticationController < ApplicationController
+class Api::AuthenticationController < ApplicationController
   before_action :authorize, only: [:authenticated]
   def register
     user = User.new(username: username_param, password: password_param)
