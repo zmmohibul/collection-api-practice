@@ -9,38 +9,47 @@
 #   end
 
 
-User.destroy_all
+# User.destroy_all
 # #
-# User.create(username: "admin", password: "admin", role: "admin")
-# User.create(username: "mohib", password: "mohib", role: "user")
+admin = User.create(username: "admin", password: "admin", role: "admin")
+admin.save
 
-Category.destroy_all
-Collection.destroy_all
+mohib = User.create(username: "mohib", password: "mohib", role: "user")
+mohib.save
 
-# book_collection = Collection.new(name: "books", description: "Collection of books")
-#
-# auth_ifd = ItemFieldDescription.new(name: "Author", data_type: "string")
-# pub_date_ifd = ItemFieldDescription.new(name: "Publication Date", data_type: "date")
-# page_count_ifd = ItemFieldDescription.new(name: "Page Count", data_type: "int")
-#
-# book_collection.item_field_descriptions << [auth_ifd, pub_date_ifd, page_count_ifd]
-#
-# book_category = Category.new(name: "Books")
-# book_collection.category = book_category
-#
-# book_collection.save
-#
-# #
-#
-# kitten_collection = Collection.new(name: "kittens", description: "Collection of cats")
-#
-# breed_ifd = ItemFieldDescription.create(name: "Breed", data_type: "string", collection_id: 2)
-# weight_ifd = ItemFieldDescription.create(name: "Weight", data_type: "int", collection_id: 2)
-# dob_ifd = ItemFieldDescription.create(name: "Date of Birth", data_type: "date", collection_id: 2)
-#
-# kitten_collection.item_field_descriptions << [breed_ifd, weight_ifd, dob_ifd]
-#
-# pet_category = Category.new(name: "Pets")
-# kitten_collection.category = pet_category
-#
-# kitten_collection.save
+musab = User.create(username: "musab", password: "musab", role: "user")
+musab.save
+
+
+# Category.destroy_all
+# Collection.destroy_all
+
+book_collection = Collection.new(name: "books", description: "Collection of books")
+book_collection.user = mohib
+
+auth_ifd = ItemFieldDescription.new(name: "Author", data_type: "string")
+pub_date_ifd = ItemFieldDescription.new(name: "Publication Date", data_type: "date")
+page_count_ifd = ItemFieldDescription.new(name: "Page Count", data_type: "int")
+
+book_collection.item_field_descriptions << [auth_ifd, pub_date_ifd, page_count_ifd]
+
+book_category = Category.new(name: "Books")
+book_collection.category = book_category
+
+
+book_collection.save
+
+
+kitten_collection = Collection.new(name: "kittens", description: "Collection of cats")
+kitten_collection.user = musab
+
+breed_ifd = ItemFieldDescription.create(name: "Breed", data_type: "string", collection_id: 2)
+weight_ifd = ItemFieldDescription.create(name: "Weight", data_type: "int", collection_id: 2)
+dob_ifd = ItemFieldDescription.create(name: "Date of Birth", data_type: "date", collection_id: 2)
+
+kitten_collection.item_field_descriptions << [breed_ifd, weight_ifd, dob_ifd]
+
+pet_category = Category.new(name: "Pets")
+kitten_collection.category = pet_category
+
+kitten_collection.save
