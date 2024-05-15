@@ -9,13 +9,13 @@
 #   end
 
 
-# User.destroy_all
+User.destroy_all
 #
 User.create(username: "admin", password: "admin", role: "admin")
 User.create(username: "mohib", password: "mohib", role: "user")
 
-# Category.destroy_all
-# Collection.destroy_all
+Category.destroy_all
+Collection.destroy_all
 
 book_collection = Collection.new(name: "books", description: "Collection of books")
 
