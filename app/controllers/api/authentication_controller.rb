@@ -1,6 +1,7 @@
 class Api::AuthenticationController < ApplicationController
   before_action :authorize, only: [:authenticated, :admin_authenticated]
   before_action :authorize_admin, only: [:admin_authenticated]
+
   def register
     user = User.new(username: username_param, password: password_param)
     return render(json: user_json(user), status: :created) if user.save
@@ -9,7 +10,7 @@ class Api::AuthenticationController < ApplicationController
 
   def login
     user = User.find_by(username: username_param)
-    raise AuthenticationError if !user || !user.authenticate(password_param)
+    raise AuthenticationError unless authenticate(user)
     render json: user_json(user), status: :ok
   end
 
@@ -28,6 +29,10 @@ class Api::AuthenticationController < ApplicationController
 
   def password_param
     params.require(:password)
+  end
+
+  def authenticate(user)
+    user && user.authenticate(password_param)
   end
 
   def user_json(user)
