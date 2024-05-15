@@ -1,5 +1,6 @@
 class Collection < ApplicationRecord
   has_many :item_field_descriptions, dependent: :destroy
+  belongs_to :category
 
   validates :name, :description, presence: true
 
@@ -8,6 +9,7 @@ class Collection < ApplicationRecord
       :id => self.id,
       :name => self.name,
       :description => self.description,
+      :category => self.category(&:as_json),
       :itemFieldDescriptions => self.item_field_descriptions.map(&:as_json),
       :created_at => self.created_at
     }

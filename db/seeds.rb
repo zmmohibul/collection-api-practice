@@ -11,9 +11,10 @@
 
 # User.destroy_all
 #
-# User.create(username: "admin", password: "admin", role: "admin")
-# User.create(username: "mohib", password: "mohib", role: "user")
+User.create(username: "admin", password: "admin", role: "admin")
+User.create(username: "mohib", password: "mohib", role: "user")
 
+# Category.destroy_all
 # Collection.destroy_all
 
 book_collection = Collection.new(name: "books", description: "Collection of books")
@@ -23,8 +24,13 @@ pub_date_ifd = ItemFieldDescription.new(name: "Publication Date", data_type: "da
 page_count_ifd = ItemFieldDescription.new(name: "Page Count", data_type: "int")
 
 book_collection.item_field_descriptions << [auth_ifd, pub_date_ifd, page_count_ifd]
+
+book_category = Category.new(name: "Books")
+book_collection.category = book_category
+
 book_collection.save
 
+#
 
 kitten_collection = Collection.new(name: "kittens", description: "Collection of cats")
 
@@ -33,4 +39,8 @@ weight_ifd = ItemFieldDescription.create(name: "Weight", data_type: "int", colle
 dob_ifd = ItemFieldDescription.create(name: "Date of Birth", data_type: "date", collection_id: 2)
 
 kitten_collection.item_field_descriptions << [breed_ifd, weight_ifd, dob_ifd]
+
+pet_category = Category.new(name: "Pets")
+kitten_collection.category = pet_category
+
 kitten_collection.save
