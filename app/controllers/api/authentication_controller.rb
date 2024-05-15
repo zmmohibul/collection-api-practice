@@ -10,7 +10,7 @@ class Api::AuthenticationController < ApplicationController
 
   def login
     @user = User.find_by(username: username_param)
-    raise AuthenticationError unless authenticate(@user)
+    raise AuthenticationError unless authenticate_user
     render json: user_json, status: :ok
   end
 
@@ -31,8 +31,8 @@ class Api::AuthenticationController < ApplicationController
     params.require(:password)
   end
 
-  def authenticate(user)
-    user && user.authenticate(password_param)
+  def authenticate_user
+    @user && @user.authenticate(password_param)
   end
 
   def user_json
