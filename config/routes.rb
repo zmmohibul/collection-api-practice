@@ -12,6 +12,8 @@ Rails.application.routes.draw do
     post 'login', to: 'authentication#login'
     get 'authenticated', to: 'authentication#authenticated'
     get 'admin_authenticated', to: 'authentication#admin_authenticated'
+
+    resources :collections, only: [:index]
   end
 
 end
