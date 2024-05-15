@@ -4,8 +4,8 @@ class Api::AuthenticationController < ApplicationController
 
   def register
     user = User.new(username: username_param, password: password_param)
-    return render(json: user_json(user), status: :created) if user.save
-    render json: user.errors, status: :unprocessable_entity
+    return render(json: user.errors, status: :unprocessable_entity) unless user.save
+    render(json: user_json(user), status: :created)
   end
 
   def login
