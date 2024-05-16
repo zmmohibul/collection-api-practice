@@ -7,6 +7,9 @@ class ApplicationController < ActionController::API
   rescue_from AuthenticationError, with: :authentication_error
   rescue_from JWT::DecodeError, with: :unauthorized
 
+  def entity_with_same_name_exist_error(name)
+    render json: { name: ["#{name} with same name exists."] }, status: :unprocessable_entity
+  end
 
   private
   def current_user
@@ -30,14 +33,14 @@ class ApplicationController < ActionController::API
   end
 
   def authentication_error
-    render json: { error: "Invalid username or password" }, status: :unauthorized
+    render json: { credential_invalid: ["Invalid username or password" ]}, status: :unauthorized
   end
 
   def parameter_missing(e)
-    render json: { error: "Field #{e.param} is missing or value is empty" }, status: :unprocessable_entity
+    render json: { parameter_invalid: ["#{e.param} is missing or value is empty"] }, status: :unprocessable_entity
   end
 
   def unauthorized
-    render json: { error: 'Not Authorized' }, status: :unauthorized
+    render json: { unauthorized: ['User not Authorized'] }, status: :unauthorized
   end
 end
