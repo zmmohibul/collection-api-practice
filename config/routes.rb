@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     get 'admin_authenticated', to: 'authentication#admin_authenticated'
 
     resources :collections, only: [:index, :create, :destroy]
+    resources :categories, only: [:index]
   end
 
 end

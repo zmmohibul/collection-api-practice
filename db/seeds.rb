@@ -8,21 +8,21 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-Category.destroy_all
-User.destroy_all
-
-admin = User.create(username: "admin", password: "admin", role: "admin")
-admin.save
-
-mohib = User.create(username: "mohib", password: "mohib", role: "user")
-mohib.save
-
-musab = User.create(username: "musab", password: "musab", role: "user")
-musab.save
-
-
-book_category = Category.new(name: "Books")
-book_category.save
-
-pet_category = Category.new(name: "Pets")
-pet_category.save
+# Category.destroy_all
+# User.destroy_all
+#
+# admin = User.create(username: "admin", password: "admin", role: "admin")
+# admin.save
+#
+# mohib = User.create(username: "mohib", password: "mohib", role: "user")
+# mohib.save
+#
+# musab = User.create(username: "musab", password: "musab", role: "user")
+# musab.save
+#
+#
+# book_category = Category.new(name: "Books")
+# book_category.save
+#
+# pet_category = Category.new(name: "Pets")
+# pet_category.save
