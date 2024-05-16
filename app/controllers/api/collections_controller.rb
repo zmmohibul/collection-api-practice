@@ -57,7 +57,6 @@ class Api::CollectionsController < ApplicationController
         col.item_field_descriptions << ifd
       end
     end
-
   end
 
   def argument_error(e)
