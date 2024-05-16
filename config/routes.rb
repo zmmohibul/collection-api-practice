@@ -13,7 +13,7 @@ Rails.application.routes.draw do
     get 'authenticated', to: 'authentication#authenticated'
     get 'admin_authenticated', to: 'authentication#admin_authenticated'
 
-    resources :collections, only: [:index, :create]
+    resources :collections, only: [:index, :create, :destroy]
   end
 
 end

@@ -3,13 +3,13 @@ class Api::AuthenticationController < ApplicationController
   before_action :authorize_admin, only: [:admin_authenticated]
 
   def register
-    @user = User.new(username: username_param, password: password_param)
-    return render(json: @user.errors, status: :unprocessable_entity) unless @user.save
+    @current_user = User.new(username: username_param, password: password_param)
+    return render(json: @current_user.errors, status: :unprocessable_entity) unless @current_user.save
     render(json: user_json, status: :created)
   end
 
   def login
-    @user = User.find_by(username: username_param)
+    @current_user = User.find_by(username: username_param)
     raise AuthenticationError unless authenticate_user
     render json: user_json, status: :ok
   end
@@ -32,15 +32,15 @@ class Api::AuthenticationController < ApplicationController
   end
 
   def authenticate_user
-    @user && @user.authenticate(password_param)
+    @current_user && @current_user.authenticate(password_param)
   end
 
   def user_json
     {
-      id: @user.id,
-      username: @user.username,
-      role: @user.role,
-      token: AuthenticationTokenService.encode(@user)
+      id: @current_user.id,
+      username: @current_user.username,
+      role: @current_user.role,
+      token: AuthenticationTokenService.encode(@current_user)
     }
   end
 end

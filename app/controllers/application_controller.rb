@@ -2,6 +2,8 @@ class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Token
   class AuthenticationError < StandardError; end
 
+  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+
   rescue_from ActionController::ParameterMissing, with: :parameter_missing
 
   rescue_from AuthenticationError, with: :authentication_error
@@ -15,7 +17,7 @@ class ApplicationController < ActionController::API
   def current_user
     if decoded_user_token
       user_id = decoded_user_token['user_id']
-      @user = User.find_by(id: user_id)
+      @current_user = User.find_by(id: user_id)
     end
   end
 
@@ -29,7 +31,7 @@ class ApplicationController < ActionController::API
   end
 
   def authorize_admin
-    unauthorized unless @user.admin?
+    unauthorized unless @current_user.admin?
   end
 
   def authentication_error
@@ -42,5 +44,13 @@ class ApplicationController < ActionController::API
 
   def unauthorized
     render json: { unauthorized: ['User not Authorized'] }, status: :unauthorized
+  end
+
+  def resource_belongs_to_current_user(resource)
+    resource.user.id == @current_user.id || @current_user.admin?
+  end
+
+  def not_found(e)
+    render json: { not_found: [e] }, status: :not_found
   end
 end

@@ -1,5 +1,5 @@
 class Api::CollectionsController < ApplicationController
-  before_action :authorize, only: [:create]
+  before_action :authorize, only: [:create, :destroy]
 
   rescue_from ArgumentError, with: :argument_error
 
@@ -20,6 +20,13 @@ class Api::CollectionsController < ApplicationController
     render json: collection, status: 201
   end
 
+  def destroy
+    collection = Collection.find(params[:id])
+    return unauthorized unless resource_belongs_to_current_user collection
+    collection.destroy
+    render status: :no_content
+  end
+
   private
   def collection_params
     params.permit(:name,
@@ -33,14 +40,14 @@ class Api::CollectionsController < ApplicationController
   end
 
   def user_has_collection_with_same_name
-    Collection.where(name: params[:name], user_id: @user.id).exists?
+    Collection.where(name: params[:name], user_id: @current_user.id).exists?
   end
 
   def instantiate_collection_from_params
     Collection.new(name: collection_params[:name],
                    description: collection_params[:description],
                    category_id: collection_params[:category_id],
-                   user: @user)
+                   user: @current_user)
   end
 
   def add_item_field_descriptions_to_collection(col)
