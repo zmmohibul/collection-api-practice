@@ -44,10 +44,13 @@ class Api::CollectionsController < ApplicationController
   end
 
   def add_item_field_descriptions_to_collection(col)
-    collection_params[:item_field_descriptions].each do |field_description|
-      ifd = ItemFieldDescription.new(name: field_description[:name], data_type: field_description[:data_type])
-      col.item_field_descriptions << ifd
+    if collection_params[:item_field_descriptions].present?
+      collection_params[:item_field_descriptions].each do |field_description|
+        ifd = ItemFieldDescription.new(name: field_description[:name], data_type: field_description[:data_type])
+        col.item_field_descriptions << ifd
+      end
     end
+
   end
 
   def argument_error(e)

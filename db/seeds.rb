@@ -21,14 +21,14 @@
 # musab.save
 
 
-Category.destroy_all
-Collection.destroy_all
-
-book_category = Category.new(name: "Books")
-book_category.save
-
-pet_category = Category.new(name: "Pets")
-pet_category.save
+# Category.destroy_all
+# Collection.destroy_all
+#
+# book_category = Category.new(name: "Books")
+# book_category.save
+#
+# pet_category = Category.new(name: "Pets")
+# pet_category.save
 
 
 # book_collection = Collection.new(name: "books", description: "Collection of books")
