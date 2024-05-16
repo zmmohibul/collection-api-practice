@@ -15,7 +15,7 @@ class Api::CollectionsController < ApplicationController
     collection = instantiate_collection_from_params
     add_item_field_descriptions_to_collection collection
 
-    return render json: collection.errors, status: 422 unless collection.save
+    return render json: collection_errors(collection), status: 422 unless collection.save
 
     render json: collection, status: 201
   end
@@ -28,6 +28,18 @@ class Api::CollectionsController < ApplicationController
   end
 
   private
+  def collection_errors(collection)
+    errors = {}.merge!(collection.errors)
+
+    errors[:item_field_descriptions] = {} if collection.errors[:item_field_descriptions]
+    collection.item_field_descriptions.each do |ifd|
+      if ifd.errors.any?
+        errors[:item_field_descriptions].merge!(ifd.errors.messages)
+      end
+    end
+
+    errors if errors.any?
+  end
   def collection_params
     params.permit(:name,
                   :description,

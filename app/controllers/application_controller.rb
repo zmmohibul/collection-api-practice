@@ -2,7 +2,8 @@ class ApplicationController < ActionController::API
   include ActionController::HttpAuthentication::Token
   class AuthenticationError < StandardError; end
 
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found
+  rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
+  rescue_from ActiveRecord::RecordNotUnique, with: :record_not_unique
 
   rescue_from ActionController::ParameterMissing, with: :parameter_missing
 
@@ -50,7 +51,14 @@ class ApplicationController < ActionController::API
     resource.user.id == @current_user.id || @current_user.admin?
   end
 
-  def not_found(e)
+  def record_not_found(e)
     render json: { not_found: [e] }, status: :not_found
+  end
+
+  def record_not_unique(e)
+    strings_in_error_message = e.to_s.split(" ")
+    index_of_word_key = strings_in_error_message.index("Key")
+    message = strings_in_error_message.slice(index_of_word_key + 1, 10).join(" ")
+    render json: { not_unique: [message] }, status: :unprocessable_entity
   end
 end
