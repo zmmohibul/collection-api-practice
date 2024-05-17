@@ -4,7 +4,7 @@ class Collection < ApplicationRecord
   belongs_to :user
 
   validates :name, :description, presence: true
-
+  validates_uniqueness_of :name, scope: :user_id, message: "can't have multiple collection with same name."
   def as_json(_options = {})
     {
       :id => self.id,

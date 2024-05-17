@@ -6,7 +6,6 @@ class Api::CollectionsController < ApplicationController
   end
 
   def create
-    return entity_with_same_name_exist "collection" if user_has_collection_with_same_name
     collection = create_collection
     collection.save
     render_response collection, 201
