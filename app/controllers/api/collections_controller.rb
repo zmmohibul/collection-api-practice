@@ -46,6 +46,19 @@ class Api::CollectionsController < ApplicationController
     end
   end
 
+  def create_item_field_description(field_description, collection)
+    item_field = ItemFieldDescription.new(name: field_description[:name],
+                                          data_type: field_description[:data_type])
+    collection.item_field_descriptions << item_field
+  end
+
+  def update_collection(collection)
+    if collection.update(collection_params)
+      update_item_field_descriptions collection
+      collection.save
+    end
+  end
+
   def update_item_field_descriptions(collection)
     item_field_descriptions_params.each do |field|
       if field[:id]
@@ -62,16 +75,13 @@ class Api::CollectionsController < ApplicationController
     collection.item_field_descriptions << item_field_in_db
   end
 
-  def create_item_field_description(field_description, collection)
-    item_field = ItemFieldDescription.new(name: field_description[:name], data_type: field_description[:data_type])
-    collection.item_field_descriptions << item_field
-  end
-
-  def update_collection(collection)
-    if collection.update(collection_params)
-      update_item_field_descriptions collection
-      collection.save
+  def render_response(collection, status)
+    errors = collection_errors collection
+    if errors
+      return render json: errors, status: 422
     end
+
+    render json: collection, status: status
   end
 
   def collection_errors(collection)
@@ -102,15 +112,6 @@ class Api::CollectionsController < ApplicationController
 
   def user_has_collection_with_same_name
     Collection.where(name: params[:name], user_id: @current_user.id).exists?
-  end
-
-  def render_response(collection, status)
-    errors = collection_errors collection
-    if errors
-      return render json: errors, status: 422
-    end
-
-    render json: collection, status: status
   end
 end
 
