@@ -10,7 +10,9 @@ class ApplicationController < ActionController::API
   rescue_from AuthenticationError, with: :authentication_error
   rescue_from JWT::DecodeError, with: :unauthorized
 
-  def entity_with_same_name_exist_error(name)
+  rescue_from ArgumentError, with: :argument_error
+
+  def entity_with_same_name_exist(name)
     render json: { name: ["#{name} with same name exists."] }, status: :unprocessable_entity
   end
 
@@ -60,5 +62,9 @@ class ApplicationController < ActionController::API
     index_of_word_key = strings_in_error_message.index("Key")
     message = strings_in_error_message.slice(index_of_word_key + 1, 10).join(" ")
     render json: { not_unique: [message] }, status: :unprocessable_entity
+  end
+
+  def argument_error(e)
+    render json: { "invalid_value": [e] }, status: :unprocessable_entity
   end
 end

@@ -1,23 +1,22 @@
 class Api::CollectionsController < ApplicationController
-  before_action :authorize, only: [:create, :destroy]
-
-  rescue_from ArgumentError, with: :argument_error
+  before_action :authorize, only: [:create, :destroy, :update]
 
   def index
     render json: Collection.all
   end
 
   def create
-    if user_has_collection_with_same_name
-      return entity_with_same_name_exist_error "collection"
-    end
+    return entity_with_same_name_exist "collection" if user_has_collection_with_same_name
+    collection = create_collection
+    collection.save
+    render_response collection, 201
+  end
 
-    collection = instantiate_collection_from_params
-    add_item_field_descriptions_to_collection collection
-
-    return render json: collection_errors(collection), status: 422 unless collection.save
-
-    render json: collection, status: 201
+  def update
+    collection = Collection.find(params[:id])
+    return unauthorized unless resource_belongs_to_current_user collection
+    update_collection collection
+    render_response collection, 200
   end
 
   def destroy
@@ -28,51 +27,84 @@ class Api::CollectionsController < ApplicationController
   end
 
   private
-  def collection_errors(collection)
-    errors = {}.merge!(collection.errors)
-
-    errors[:item_field_descriptions] = {} if collection.errors[:item_field_descriptions]
-    collection.item_field_descriptions.each do |ifd|
-      if ifd.errors.any?
-        errors[:item_field_descriptions].merge!(ifd.errors.messages)
-      end
-    end
-
-    errors if errors.any?
-  end
-  def collection_params
-    params.permit(:name,
-                  :description,
-                  :category_id,
-                  item_field_descriptions: [ :name, :data_type ])
+  def create_collection
+    collection = instantiate_collection_using_param_values
+    update_item_field_descriptions collection
+    collection
   end
 
-  def item_field_descriptions
-    params.require(:item_field_descriptions).permit(:name, :data_type)
-  end
-
-  def user_has_collection_with_same_name
-    Collection.where(name: params[:name], user_id: @current_user.id).exists?
-  end
-
-  def instantiate_collection_from_params
+  def instantiate_collection_using_param_values
     Collection.new(name: collection_params[:name],
                    description: collection_params[:description],
                    category_id: collection_params[:category_id],
                    user: @current_user)
   end
 
-  def add_item_field_descriptions_to_collection(col)
-    if collection_params[:item_field_descriptions].present?
-      collection_params[:item_field_descriptions].each do |field_description|
-        ifd = ItemFieldDescription.new(name: field_description[:name], data_type: field_description[:data_type])
-        col.item_field_descriptions << ifd
+  def update_item_field_descriptions(collection)
+    item_field_descriptions_params.each do |field|
+      if field[:id]
+        update_item_field_description field[:id], field, collection
+      else
+        create_item_field_description field, collection
       end
     end
   end
 
-  def argument_error(e)
-    render json: { "invalid_value": [e] }, status: :unprocessable_entity
+  def update_item_field_description(id, field_description, collection)
+    item_field_in_db = ItemFieldDescription.find(id)
+    item_field_in_db.name = field_description[:name]
+    collection.item_field_descriptions << item_field_in_db
+  end
+
+  def create_item_field_description(field_description, collection)
+    item_field = ItemFieldDescription.new(name: field_description[:name], data_type: field_description[:data_type])
+    collection.item_field_descriptions << item_field
+  end
+
+  def update_collection(collection)
+    if collection.update(collection_params)
+      update_item_field_descriptions collection
+      collection.save
+    end
+  end
+
+  def collection_errors(collection)
+    errors = {}
+    errors.merge!(collection.errors) if collection.errors.any?
+
+    ifd_errors = item_field_descriptions_errors collection
+    errors[:item_field_descriptions] = ifd_errors if ifd_errors.any?
+
+    errors if errors.any?
+  end
+
+  def item_field_descriptions_errors(collection)
+    errors = {}
+    collection.item_field_descriptions.each do |ifd|
+      errors.merge!(ifd.errors.messages) if ifd.errors.any?
+    end
+    errors
+  end
+
+  def collection_params
+    params.permit(:name, :description, :category_id)
+  end
+
+  def item_field_descriptions_params
+    params.fetch(:item_field_descriptions, [])
+  end
+
+  def user_has_collection_with_same_name
+    Collection.where(name: params[:name], user_id: @current_user.id).exists?
+  end
+
+  def render_response(collection, status)
+    errors  = collection_errors collection
+    if errors
+      return render json: errors, status: 422
+    end
+
+    render json: collection, status: status
   end
 end
 
