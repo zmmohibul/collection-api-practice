@@ -29,7 +29,7 @@ class Api::CollectionsController < ApplicationController
   private
   def create_collection
     collection = instantiate_collection_using_param_values
-    update_item_field_descriptions collection
+    create_item_field_descriptions collection
     collection
   end
 
@@ -38,6 +38,12 @@ class Api::CollectionsController < ApplicationController
                    description: collection_params[:description],
                    category_id: collection_params[:category_id],
                    user: @current_user)
+  end
+
+  def create_item_field_descriptions(collection)
+    item_field_descriptions_params.each do |field|
+      create_item_field_description field, collection
+    end
   end
 
   def update_item_field_descriptions(collection)
@@ -99,7 +105,7 @@ class Api::CollectionsController < ApplicationController
   end
 
   def render_response(collection, status)
-    errors  = collection_errors collection
+    errors = collection_errors collection
     if errors
       return render json: errors, status: 422
     end
