@@ -11,8 +11,8 @@
 # Category.destroy_all
 # User.destroy_all
 #
-admin = User.create(username: "admin", password: "admin", role: "admin")
-admin.save
+# admin = User.create(username: "admin", password: "admin", role: "admin")
+# admin.save
 #
 # mohib = User.create(username: "mohib", password: "mohib", role: "user")
 # mohib.save
@@ -21,8 +21,8 @@ admin.save
 # musab.save
 #
 #
-book_category = Category.new(name: "Books")
-book_category.save
-
-pet_category = Category.new(name: "Pets")
-pet_category.save
+# book_category = Category.new(name: "Books")
+# book_category.save
+#
+# pet_category = Category.new(name: "Pets")
+# pet_category.save
