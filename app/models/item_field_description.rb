@@ -1,5 +1,6 @@
 class ItemFieldDescription < ApplicationRecord
   belongs_to :collection
+  has_many :item_field_values, dependent: :destroy
 
   validates :name, :data_type, presence: true
   validates_uniqueness_of :name, scope: :collection_id, message: "can't have multiple fields with same name."

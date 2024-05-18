@@ -27,16 +27,10 @@ class Api::CollectionsController < ApplicationController
 
   private
   def create_collection
-    collection = instantiate_collection_using_param_values
+    collection = Collection.new(collection_params)
+    collection.user = @current_user
     create_item_field_descriptions collection
     collection
-  end
-
-  def instantiate_collection_using_param_values
-    Collection.new(name: collection_params[:name],
-                   description: collection_params[:description],
-                   category_id: collection_params[:category_id],
-                   user: @current_user)
   end
 
   def create_item_field_descriptions(collection)
@@ -70,28 +64,33 @@ class Api::CollectionsController < ApplicationController
 
   def update_item_field_description(id, field_description, collection)
     item_field_in_db = ItemFieldDescription.find(id)
-    item_field_in_db.name = field_description[:name]
+    item_field_in_db.name = field_description[:name] if field_description[:name]
     collection.item_field_descriptions << item_field_in_db
   end
 
   def render_response(collection, status)
     errors = collection_errors collection
-    if errors
-      return render json: errors, status: 422
-    end
-
+    return render json: errors, status: 422 if errors
     render json: collection, status: status
   end
 
   def collection_errors(collection)
-    errors = {}
-    errors.merge!(collection.errors) if collection.errors.any?
-
-    ifd_errors = item_field_descriptions_errors collection
-    errors[:item_field_descriptions] = ifd_errors if ifd_errors.any?
-
+    errors = create_collection_errors collection
+    add_item_field_description_errors errors, collection
     errors if errors.any?
   end
+
+  def create_collection_errors(collection)
+    errors = {}
+    errors.merge!(collection.errors) if collection.errors.any?
+    errors
+  end
+
+  def add_item_field_description_errors(errors, collection)
+    ifd_errors = item_field_descriptions_errors collection
+    errors[:item_field_descriptions] = ifd_errors if ifd_errors.any?
+  end
+
 
   def item_field_descriptions_errors(collection)
     errors = {}

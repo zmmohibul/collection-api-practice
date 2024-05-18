@@ -1,5 +1,6 @@
 class Collection < ApplicationRecord
   has_many :item_field_descriptions, dependent: :destroy
+  has_many :items, dependent: :destroy
   belongs_to :category
   belongs_to :user
 

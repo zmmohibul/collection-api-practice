@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_05_17_111225) do
+ActiveRecord::Schema[7.1].define(version: 2024_05_18_132919) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,29 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_17_111225) do
     t.index ["collection_id"], name: "index_item_field_descriptions_on_collection_id"
   end
 
+  create_table "item_field_values", force: :cascade do |t|
+    t.integer "int_value"
+    t.string "string_value"
+    t.text "text_value"
+    t.boolean "boolean_boolean"
+    t.datetime "date_value"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "item_id", null: false
+    t.bigint "item_field_description_id", null: false
+    t.index ["item_field_description_id"], name: "index_item_field_values_on_item_field_description_id"
+    t.index ["item_id"], name: "index_item_field_values_on_item_id"
+  end
+
+  create_table "items", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "collection_id", null: false
+    t.index ["collection_id", "name"], name: "index_items_on_collection_id_and_name", unique: true
+    t.index ["collection_id"], name: "index_items_on_collection_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "username"
     t.datetime "created_at", null: false
@@ -55,4 +78,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_05_17_111225) do
   add_foreign_key "collections", "categories"
   add_foreign_key "collections", "users"
   add_foreign_key "item_field_descriptions", "collections"
+  add_foreign_key "item_field_values", "item_field_descriptions"
+  add_foreign_key "item_field_values", "items"
+  add_foreign_key "items", "collections"
 end
