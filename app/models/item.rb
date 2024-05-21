@@ -3,4 +3,5 @@ class Item < ApplicationRecord
   has_many :item_field_values, dependent: :destroy
 
   validates :name, :collection_id, presence: true
+  validates :collection, presence: true
 end

@@ -71,4 +71,38 @@ class ApplicationController < ActionController::API
   def argument_error(e)
     render json: { "invalid_value": [e] }, status: :unprocessable_entity
   end
+
+  def errors_of_models(models)
+    errors = {}
+    models.each do |model|
+      errors.merge!(model.errors.messages) if model.errors.any?
+    end
+    errors
+  end
+
+  def error_list_of_models(models)
+    errors = []
+    models.each do |model|
+      if model.errors.any?
+        model.errors.full_messages.each do |message|
+          errors << message
+        end
+      end
+    end
+    errors
+  end
+
+  def add_item_field_description_errors(errors, collection)
+    ifd_errors = item_field_descriptions_errors collection
+    errors[:item_field_descriptions] = ifd_errors if ifd_errors.any?
+  end
+
+
+  def item_field_descriptions_errors(collection)
+    errors = {}
+    collection.item_field_descriptions.each do |ifd|
+      errors.merge!(ifd.errors.messages) if ifd.errors.any?
+    end
+    errors
+  end
 end

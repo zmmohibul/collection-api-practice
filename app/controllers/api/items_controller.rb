@@ -15,23 +15,17 @@ class Api::ItemsController < ApplicationController
         return render json: { "item_field_values": [ "Field #{item_field_in_collection.name} is missing" ] }, status: :unprocessable_entity
       end
 
-      unless field_value_in_param[:value]
-        return render json: { "item_field_values": [ "#{item_field_in_collection.name} can't be empty" ] }, status: :unprocessable_entity
-      end
-
       item_field_value = item_field_value_for_data_type(ItemFieldDescription.data_types[item_field_in_collection.data_type],
                                                         field_value_in_param[:value])
+      item_field_value[:item_field_description_id] = item_field_in_collection.id
 
       item_field_value.item_field_description = item_field_in_collection
 
       item.item_field_values << item_field_value
     end
 
-    unless item.save
-      return render json: item.errors, status: :unprocessable_entity
-    end
-
-    render json: item, status: :created
+    item.save
+    render_response item
   end
 
   private
@@ -52,5 +46,21 @@ class Api::ItemsController < ApplicationController
 
   def field_values_params
     params.fetch(:item_field_values, [])
+  end
+
+  def render_response(item)
+    errors = item_errors item
+    if errors.any?
+      return render json: item_errors(item), status: :unprocessable_entity
+    end
+    render json: item, status: :created
+  end
+
+  def item_errors(item)
+    errors = {}
+    errors.merge!(item.errors) if item.errors.any?
+    ifv_error_list = error_list_of_models item.item_field_values
+    errors[:item_field_values] = ifv_error_list if ifv_error_list.any?
+    errors
   end
 end

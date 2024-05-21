@@ -21,8 +21,4 @@
 # musab.save
 #
 #
-# book_category = Category.new(name: "Books")
-# book_category.save
-#
-# pet_category = Category.new(name: "Pets")
-# pet_category.save
+# xxxxxxxxxxxxxxxxxxscccccccvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
