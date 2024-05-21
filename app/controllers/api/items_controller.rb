@@ -1,11 +1,14 @@
 class Api::ItemsController < ApplicationController
+  before_action :authorize, only: [:create]
   def index
     render json: Item.includes(:item_field_values).all
   end
 
   def create
     collection = Collection.includes(:item_field_descriptions).find(item_params[:collection_id])
-    item = Item.new(name: item_params[:name], collection_id: collection.id)
+    return forbidden unless resource_belongs_to_current_user collection
+
+    item = Item.new(name: item_params[:name], collection_id: collection.id, user_id: collection.user_id)
     collection.item_field_descriptions.each do |item_field_in_collection|
       field_value_in_param = field_values_params.find { |field_param| field_param[:item_field_description_id] == item_field_in_collection.id }
       unless field_value_in_param
@@ -46,7 +49,7 @@ class Api::ItemsController < ApplicationController
   def item_params
     params.require(:item).permit(:name, :collection_id)
   end
-  
+
   def field_values_params
     params.fetch(:item_field_values, [])
   end

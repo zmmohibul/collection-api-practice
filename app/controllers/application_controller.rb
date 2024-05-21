@@ -49,6 +49,10 @@ class ApplicationController < ActionController::API
     render json: { unauthorized: ['User not Authorized'] }, status: :unauthorized
   end
 
+  def forbidden
+    render json: { forbidden: ['Sorry, you are not allowed to do that.'] }, status: :forbidden
+  end
+
   def resource_belongs_to_current_user(resource)
     resource.user.id == @current_user.id || @current_user.admin?
   end

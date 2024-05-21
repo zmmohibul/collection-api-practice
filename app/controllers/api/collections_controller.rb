@@ -13,14 +13,14 @@ class Api::CollectionsController < ApplicationController
 
   def update
     collection = Collection.find(params[:id])
-    return unauthorized unless resource_belongs_to_current_user collection
+    return forbidden unless resource_belongs_to_current_user collection
     update_collection collection
     render_response collection, 200
   end
 
   def destroy
     collection = Collection.find(params[:id])
-    return unauthorized unless resource_belongs_to_current_user collection
+    return forbidden unless resource_belongs_to_current_user collection
     collection.destroy
     render status: :no_content
   end

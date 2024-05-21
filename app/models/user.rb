@@ -1,5 +1,6 @@
 class User < ApplicationRecord
-  has_many :collections
+  has_many :collections, dependent: :destroy
+  has_many :items, dependent: :destroy
 
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   enum role: { user: "user", admin: "admin" }
