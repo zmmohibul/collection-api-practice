@@ -8,19 +8,12 @@ class Api::ItemsController < ApplicationController
     collection = Collection.includes(:item_field_descriptions).find(item_params[:collection_id])
     return forbidden unless resource_belongs_to_current_user collection
 
-    item = Item.new(name: item_params[:name], collection_id: collection.id, user_id: collection.user_id)
-    collection.item_field_descriptions.each do |item_field_in_collection|
-      field_value_in_param = field_values_params.find { |field_param| field_param[:item_field_description_id] == item_field_in_collection.id }
-      unless field_value_in_param
-        return render json: { "item_field_values": [ "Field #{item_field_in_collection.name} is missing" ] }, status: :unprocessable_entity
-      end
+    item = Item.new(name: item_params[:name], user: collection.user, collection: collection)
 
-      item_field_value = item_field_value_for_data_type(ItemFieldDescription.data_types[item_field_in_collection.data_type],
-                                                        field_value_in_param[:value])
-      item_field_value[:item_field_description_id] = item_field_in_collection.id
-
-      item_field_value.item_field_description = item_field_in_collection
-
+    field_values_params.each do |param_field_value|
+      item_field_description = ItemFieldDescription.find(param_field_value[:item_field_description_id])
+      item_field_value = new_item_field_value(item_field_data_type(item_field_description), param_field_value[:value])
+      item_field_value.item_field_description = item_field_description
       item.item_field_values << item_field_value
     end
 
@@ -38,6 +31,14 @@ class Api::ItemsController < ApplicationController
       ItemFieldDescription.data_types[:text_type] => ItemFieldValue.new(text_value: value)
     }
     map[data_type]
+  end
+
+  def new_item_field_value(data_type, field_value)
+    item_field_value_for_data_type(data_type, field_value)
+  end
+
+  def item_field_data_type(item_field)
+    ItemFieldDescription.data_types[item_field.data_type]
   end
 
   def item_params
