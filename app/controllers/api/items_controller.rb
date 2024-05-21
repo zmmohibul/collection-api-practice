@@ -5,23 +5,34 @@ class Api::ItemsController < ApplicationController
   end
 
   def create
-    collection = Collection.includes(:item_field_descriptions).find(item_params[:collection_id])
-    return forbidden unless resource_belongs_to_current_user collection
-
-    item = Item.new(name: item_params[:name], user: collection.user, collection: collection)
-
-    field_values_params.each do |param_field_value|
-      item_field_description = ItemFieldDescription.find(param_field_value[:item_field_description_id])
-      item_field_value = new_item_field_value(item_field_data_type(item_field_description), param_field_value[:value])
-      item_field_value.item_field_description = item_field_description
-      item.item_field_values << item_field_value
-    end
-
-    item.save
-    render_response item
+    @collection = Collection.includes(:item_field_descriptions).find(item_params[:collection_id])
+    return forbidden unless resource_belongs_to_current_user @collection
+    instantiate_new_item
+    @item.save
+    render_response
   end
 
   private
+  def instantiate_new_item
+    @item = Item.new(name: item_params[:name])
+    @item.collection = @collection
+    @item.user = @collection.user
+    add_field_values_to_item
+  end
+
+  def add_field_values_to_item
+    field_values_params.each do |param_field_value|
+      item_field = ItemFieldDescription.find(param_field_value[:item_field_description_id])
+      item_field_value = new_item_field_value(item_field_data_type(item_field), param_field_value[:value])
+      item_field_value.item_field_description = item_field
+      @item.item_field_values << item_field_value
+    end
+  end
+
+  def new_item_field_value(data_type, field_value)
+    item_field_value_for_data_type(data_type, field_value)
+  end
+
   def item_field_value_for_data_type(data_type, value)
     map = {
       ItemFieldDescription.data_types[:int_type] => ItemFieldValue.new(int_value: value),
@@ -31,10 +42,6 @@ class Api::ItemsController < ApplicationController
       ItemFieldDescription.data_types[:text_type] => ItemFieldValue.new(text_value: value)
     }
     map[data_type]
-  end
-
-  def new_item_field_value(data_type, field_value)
-    item_field_value_for_data_type(data_type, field_value)
   end
 
   def item_field_data_type(item_field)
@@ -49,12 +56,12 @@ class Api::ItemsController < ApplicationController
     params.fetch(:item_field_values, [])
   end
 
-  def render_response(item)
-    errors = item_errors item
+  def render_response
+    errors = item_errors @item
     if errors.any?
-      return render json: item_errors(item), status: :unprocessable_entity
+      return render json: item_errors(@item), status: :unprocessable_entity
     end
-    render json: item, status: :created
+    render json: @item, status: :created
   end
 
   def item_errors(item)
