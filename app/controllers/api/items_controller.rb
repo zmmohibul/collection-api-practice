@@ -14,9 +14,7 @@ class Api::ItemsController < ApplicationController
 
   private
   def instantiate_new_item
-    @item = Item.new(name: item_params[:name])
-    @item.collection = @collection
-    @item.user = @collection.user
+    @item = Item.new(name: item_params[:name], collection: @collection, user: @collection.user)
     add_field_values_to_item
   end
 
@@ -68,7 +66,12 @@ class Api::ItemsController < ApplicationController
     errors = {}
     errors.merge!(item.errors) if item.errors.any?
     ifv_error_list = error_list_of_models item.item_field_values
-    errors[:item_field_values] = ifv_error_list if ifv_error_list.any?
+    if errors[:item_field_values]
+      errors[:item_field_values].pop
+      errors[:item_field_values].concat(ifv_error_list)
+    else
+      errors[:item_field_values] = ifv_error_list if ifv_error_list.any?
+    end
     errors
   end
 end
