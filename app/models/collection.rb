@@ -12,7 +12,7 @@ class Collection < ApplicationRecord
       :name => self.name,
       :description => self.description,
       :category => self.category(&:as_json),
-      :itemFieldDescriptions => self.item_field_descriptions.map(&:as_json),
+      :item_field_descriptions => self.item_field_descriptions.map(&:as_json),
       :user => self.user(&:as_json),
       :created_at => self.created_at
     }

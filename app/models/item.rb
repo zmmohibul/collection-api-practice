@@ -11,6 +11,15 @@ class Item < ApplicationRecord
     missing_item_field_value_check
   end
 
+  def as_json(_options={})
+    {
+      id: self.id,
+      name: self.name,
+      item_fields: self.item_field_values.map(&:as_json),
+      created_at: self.created_at
+    }
+  end
+
   private
   def validate_item_field_values
     self.item_field_values.each do |item_field_value|

@@ -10,7 +10,7 @@ class ItemFieldDescription < ApplicationRecord
     {
       :id => self.id,
       :name => self.name,
-      :dataType => ItemFieldDescription.data_types[self.data_type],
+      :data_type => ItemFieldDescription.data_types[self.data_type],
     }
   end
 end

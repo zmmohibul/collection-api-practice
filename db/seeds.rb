@@ -19,6 +19,3 @@
 #
 # musab = User.create(username: "musab", password: "musab", role: "user")
 # musab.save
-#
-#
-# xxxxxxxxxxxxxxxxxxscccccccvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

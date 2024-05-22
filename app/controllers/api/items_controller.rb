@@ -19,9 +19,9 @@ class Api::ItemsController < ApplicationController
   end
 
   def add_field_values_to_item
-    field_values_params.each do |param_field_value|
-      item_field = ItemFieldDescription.find(param_field_value[:item_field_description_id])
-      item_field_value = new_item_field_value(item_field_data_type(item_field), param_field_value[:value])
+    field_values_params.each do |field_value_params|
+      item_field = ItemFieldDescription.find(field_value_params[:item_field_description_id])
+      item_field_value = new_item_field_value(item_field_data_type(item_field), field_value_params[:value])
       item_field_value.item_field_description = item_field
       @item.item_field_values << item_field_value
     end
