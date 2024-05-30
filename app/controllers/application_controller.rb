@@ -38,11 +38,11 @@ class ApplicationController < ActionController::API
   end
 
   def authentication_error
-    render json: { credential_invalid: ["Invalid username or password" ]}, status: :unauthorized
+    render json: { "error": ["invalid username or password" ]}, status: :unauthorized
   end
 
   def parameter_missing(e)
-    render json: { parameter_invalid: ["#{e.param} is missing or value is empty"] }, status: :unprocessable_entity
+    render json: { "Field": ["#{e.param} is missing or value is empty"] }, status: :unprocessable_entity
   end
 
   def unauthorized
@@ -88,20 +88,6 @@ class ApplicationController < ActionController::API
           errors << message
         end
       end
-    end
-    errors
-  end
-
-  def add_item_field_description_errors(errors, collection)
-    ifd_errors = item_field_descriptions_errors collection
-    errors[:item_field_descriptions] = ifd_errors if ifd_errors.any?
-  end
-
-
-  def item_field_descriptions_errors(collection)
-    errors = {}
-    collection.item_field_descriptions.each do |ifd|
-      errors.merge!(ifd.errors.messages) if ifd.errors.any?
     end
     errors
   end

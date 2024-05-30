@@ -39,26 +39,27 @@ class ItemFieldValue < ApplicationRecord
   }, if: :value_type_date?
 
   def as_json(_options={})
-    json = {
+    {
       field_name: self.item_field_description.name,
+      field_value: field_value
     }
-
-    if value_type_int?
-      json[:field_value] = self.int_value
-    elsif value_type_string?
-      json[:field_value] = self.string_value
-    elsif value_type_text?
-      json[:field_value] = self.text_value
-    elsif value_type_boolean?
-      json[:field_value] = self.boolean_value
-    elsif value_type_date?
-      json[:field_value] = self.date_value
-    end
-
-    json
   end
 
   private
+  def field_value
+    if value_type_int?
+      self.int_value
+    elsif value_type_string?
+      self.string_value
+    elsif value_type_text?
+      self.text_value
+    elsif value_type_boolean?
+      self.boolean_value
+    elsif value_type_date?
+      self.date_value
+    end
+  end
+
   def value_type_int?
     self.item_field_description.int_type?
   end
@@ -78,6 +79,4 @@ class ItemFieldValue < ApplicationRecord
   def value_type_date?
     self.item_field_description.date_type?
   end
-
-
 end
